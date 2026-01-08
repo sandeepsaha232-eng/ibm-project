@@ -1,40 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal</title>
+    <title>Submit Feedback</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
         }
 
-        /* Common Card Style */
-        .card {
+        .form-card {
             background: white;
-            padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .optional-text {
+            font-weight: normal;
+            font-style: italic;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            /* Important for width */
+        }
+
+        .rating-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-item {
+            flex: 1;
             text-align: center;
         }
 
-        h2 { color: #333; margin-bottom: 1.5rem; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
+        .rating-item input {
+            display: none;
         }
+
+        .rating-item label {
+            display: block;
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 0 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .rating-item input:checked+label {
+            background: #4a90e2;
+            color: white;
+        }
+
 
         button {
             width: 100%;
@@ -42,108 +104,139 @@
             background-color: #4a90e2;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
+            font-size: 1rem;
         }
 
-        button:hover { background-color: #357abd; }
-
-        /* Menu Options */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 20px;
+        button:hover {
+            background-color: #357abd;
         }
 
-        .menu-item {
+        .hidden {
+            display: none;
+        }
+
+        #success {
+            text-align: center;
             padding: 20px;
-            border: 2px solid #eee;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            color: #333;
         }
-
-        .menu-item:hover {
-            border-color: #4a90e2;
-            background-color: #f8fbff;
-        }
-
-        .menu-item h3 { margin: 0 0 5px 0; color: #4a90e2; }
-        .menu-item p { margin: 0; font-size: 0.85rem; color: #777; }
-
-        .hidden { display: none; }
     </style>
 </head>
+
 <body>
 
-    <div id="loginSection" class="card">
-        <h2>Admin Login</h2>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="handleLogin()">Login</button>
+    <div class="form-card" id="formContainer">
+        <h2 id="formTitle">Feedback</h2>
+        <p id="formDesc">Please let us know how we did!</p>
+
+        <form id="feedbackForm">
+            <div class="input-group">
+                <label>Name <span class="optional-text">(Optional)</span></label>
+                <input type="text" name="userName" placeholder="Your Name">
+            </div>
+
+            <div class="input-group">
+                <label>Email <span class="optional-text">(Optional)</span></label>
+                <input type="email" name="userEmail" placeholder="email@example.com">
+            </div>
+
+            <div id="questionsContainer"></div>
+
+            <div class="input-group">
+                <label>Your Message</label>
+                <textarea name="comment" rows="4" required placeholder="What's on your mind?"></textarea>
+            </div>
+
+            <button type="submit">Send Feedback</button>
+        </form>
     </div>
 
-    <div id="portalSection" class="card hidden">
-        <h2>Welcome, Admin</h2>
-        <p>What would you like to do today?</p>
-        
-        <div class="menu-grid">
-            <div class="menu-item" onclick="showSection('createSection')">
-                <h3>➕ Create New Form</h3>
-                <p>Generate a new feedback link</p>
-            </div>
-            <div class="menu-item" onclick="window.location.href='admin.html'">
-                <h3>📊 View Analytics</h3>
-                <p>Check data from past feedbacks</p>
-            </div>
-        </div>
-        <button onclick="logout()" style="margin-top: 20px; background: #999;">Logout</button>
-    </div>
-
-    <div id="createSection" class="card hidden">
-        <h2>Create Feedback Form</h2>
-        <div style="text-align: left;">
-            <label style="font-size: 0.8rem; font-weight: bold;">Form Title</label>
-            <input type="text" placeholder="e.g., Customer Service Survey">
-            
-            <label style="font-size: 0.8rem; font-weight: bold;">Description</label>
-            <input type="text" placeholder="e.g., Help us improve our support">
-        </div>
-        <button onclick="generateLink()">Generate & Copy Link</button>
-        <p id="linkResult" style="margin-top: 15px; font-weight: bold; color: #2ecc71;"></p>
-        <button onclick="showSection('portalSection')" style="background: none; color: #4a90e2; border: 1px solid #4a90e2; margin-top: 10px;">Back to Hub</button>
+    <div id="success" class="form-card hidden">
+        <h2 style="color: #2ecc71;">Thank You!</h2>
+        <p>Your feedback has been submitted to the admin dashboard.</p>
     </div>
 
     <script>
-        function handleLogin() {
-            // In a real app, you'd verify credentials with a server here
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('portalSection').classList.remove('hidden');
+        // Parse URL Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const title = urlParams.get('title');
+        const desc = urlParams.get('desc');
+        const questionsString = urlParams.get('questions');
+        const count = parseInt(urlParams.get('count')) || 1;
+
+        // Populate Form
+        if (title) document.getElementById('formTitle').innerText = title;
+        if (desc) document.getElementById('formDesc').innerText = desc;
+
+        // Generate Questions
+        const container = document.getElementById('questionsContainer');
+        const questionsList = questionsString ? questionsString.split('|') : [];
+
+        for (let i = 1; i <= count; i++) {
+            const qLabel = questionsList[i - 1] || (count > 1 ? `Question ${i}` : 'Rating');
+
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label style="margin-top: 15px;">${qLabel}</label>
+                <div class="rating-container">
+                    ${[1, 2, 3, 4, 5].map(val => `
+                        <div class="rating-item">
+                            <input type="radio" name="rating_${i}" id="q${i}_r${val}" value="${val}" ${i === 1 ? 'required' : ''}>
+                            <label for="q${i}_r${val}">${val}</label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(div);
         }
 
-        function showSection(sectionId) {
-            // Hide all cards
-            document.getElementById('portalSection').classList.add('hidden');
-            document.getElementById('createSection').classList.add('hidden');
-            
-            // Show the specific one
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
+        document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        function generateLink() {
-            const randomId = Math.floor(Math.random() * 10000);
-            const link = "mysite.com/form.html?id=" + randomId;
-            document.getElementById('linkResult').innerText = "Form Created! Link: " + link;
-        }
+            // Collect Data
+            const responses = [];
+            for (let i = 1; i <= count; i++) {
+                const selected = document.querySelector(`input[name="rating_${i}"]:checked`);
+                responses.push({
+                    question: questionsList[i - 1] || `Question ${i}`,
+                    rating: selected ? selected.value : "No rating"
+                });
+            }
 
-        function logout() {
-            location.reload(); // Simple way to reset state
-        }
+            const comment = document.querySelector('textarea[name="comment"]').value;
+            const userName = document.querySelector('input[name="userName"]').value;
+            const userEmail = document.querySelector('input[name="userEmail"]').value;
+
+            // Store locally
+            // We need to flatten the responses for the single-row analytics table provided in the prompt
+            // The prompt's analytics code expects a single rating/review per entry.
+            // Since we support multiple questions, we will save an entry PER question response
+            // so the analytics can aggregate them all.
+
+            let existingData = JSON.parse(localStorage.getItem('app_feedback_data') || "[]");
+
+            responses.forEach(r => {
+                const feedbackData = {
+                    question: r.question,
+                    rating: parseInt(r.rating) || 0, // Ensure integer
+                    review: comment, // Attach the general comment to each rating for context
+                    timestamp: new Date().toLocaleString(),
+                    userName: userName, // Preserving extra metadata
+                    userEmail: userEmail
+                };
+                existingData.push(feedbackData);
+            });
+
+            localStorage.setItem('app_feedback_data', JSON.stringify(existingData));
+
+            // Show Success
+            document.getElementById('formContainer').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+            console.log("Feedback saved locally:", existingData);
+        });
     </script>
 </body>
+
 </html>

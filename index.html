@@ -1,166 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Feedback</title>
+    <title>Admin Portal</title>
     <style>
-        /* General Styles */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
         }
 
-        /* Card Container */
-        .form-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        /* Background Video */
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+        }
+
+        /* Common Card Style */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            /* Slight transparency */
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
+            text-align: center;
         }
 
-        h2 { color: #333; margin-top: 0; }
-        p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
-
-        /* Input Groups */
-        .input-group { margin-bottom: 1.2rem; }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #444;
-            font-size: 0.9rem;
-        }
-
-        .optional-text {
-            font-weight: normal;
-            font-style: italic;
-            color: #999;
-            font-size: 0.8rem;
-        }
-
-        input[type="text"], input[type="email"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box; /* Important for width */
-        }
-
-        /* Rating Buttons */
-        .rating-container {
-            display: flex;
-            justify-content: space-between;
+        h2 {
+            color: #333;
             margin-bottom: 1.5rem;
         }
 
-        .rating-item { flex: 1; text-align: center; }
-
-        .rating-item input { display: none; }
-
-        .rating-item label {
-            display: block;
-            background: #f0f0f0;
-            padding: 10px;
-            margin: 0 4px;
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            cursor: pointer;
-            transition: 0.3s;
+            box-sizing: border-box;
         }
 
-        .rating-item input:checked + label {
-            background: #4a90e2;
-            color: white;
-        }
-
-        /* Button */
         button {
             width: 100%;
             padding: 12px;
             background-color: #4a90e2;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 1rem;
+            transition: 0.3s;
         }
 
-        button:hover { background-color: #357abd; }
+        button:hover {
+            background-color: #357abd;
+        }
 
-        .hidden { display: none; }
-        #success { text-align: center; padding: 20px; }
+        /* Menu Options */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            padding: 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .menu-item:hover {
+            border-color: #4a90e2;
+            background-color: #f8fbff;
+        }
+
+        .menu-item h3 {
+            margin: 0 0 5px 0;
+            color: #4a90e2;
+        }
+
+        .menu-item p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .question-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .question-group label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
     </style>
 </head>
+
 <body>
+    <video autoplay muted loop id="bg-video">
+        <source
+            src="https://media.istockphoto.com/id/1307541648/video/4k-white-animated-wavy-soft-wavy-universal-background-product-banner.mp4?s=mp4-640x640-is&k=20&c=wV2FEZJcBkUajOakaTYlfjTWY8JxzI62XtlDrIiF_wg="
+            type="video/mp4">
+    </video>
 
-    <div class="form-card" id="formContainer">
-        <h2>Feedback</h2>
-        <p>Please let us know how we did!</p>
-
-        <form id="feedbackForm">
-            <div class="input-group">
-                <label>Name <span class="optional-text">(Optional)</span></label>
-                <input type="text" name="userName" placeholder="Your Name">
-            </div>
-
-            <div class="input-group">
-                <label>Email <span class="optional-text">(Optional)</span></label>
-                <input type="email" name="userEmail" placeholder="email@example.com">
-            </div>
-
-            <label>Rating (1-5)</label>
-            <div class="rating-container">
-                <div class="rating-item">
-                    <input type="radio" name="rating" id="r1" value="1" required>
-                    <label for="r1">1</label>
-                </div>
-                <div class="rating-item">
-                    <input type="radio" name="rating" id="r2" value="2">
-                    <label for="r2">2</label>
-                </div>
-                <div class="rating-item">
-                    <input type="radio" name="rating" id="r3" value="3">
-                    <label for="r3">3</label>
-                </div>
-                <div class="rating-item">
-                    <input type="radio" name="rating" id="r4" value="4">
-                    <label for="r4">4</label>
-                </div>
-                <div class="rating-item">
-                    <input type="radio" name="rating" id="r5" value="5">
-                    <label for="r5">5</label>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Your Message</label>
-                <textarea name="comment" rows="4" required placeholder="What's on your mind?"></textarea>
-            </div>
-
-            <button type="submit">Send Feedback</button>
-        </form>
+    <div id="loginSection" class="card">
+        <h2>Admin Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
     </div>
 
-    <div id="success" class="form-card hidden">
-        <h2 style="color: #2ecc71;">Thank You!</h2>
-        <p>Your feedback has been submitted to the admin dashboard.</p>
+    <div id="portalSection" class="card hidden">
+        <h2>Welcome, Admin</h2>
+        <p>What would you like to do today?</p>
+
+        <div class="menu-grid">
+            <div class="menu-item" onclick="showSection('createSection')">
+                <h3>➕ Create New Form</h3>
+                <p>Generate a new feedback link</p>
+            </div>
+            <div class="menu-item" onclick="window.location.href='analytics.html'">
+                <h3>📊 View Analytics</h3>
+                <p>Check data from past feedbacks</p>
+            </div>
+        </div>
+        <button onclick="logout()" style="margin-top: 20px; background: #999;">Logout</button>
+    </div>
+
+    <div id="createSection" class="card hidden">
+        <h2>Create Feedback Form</h2>
+        <div style="text-align: left;">
+            <label style="font-size: 0.8rem; font-weight: bold;">Form Title</label>
+            <input type="text" id="formTitle" placeholder="e.g., Customer Service Survey">
+
+            <label style="font-size: 0.8rem; font-weight: bold;">Description</label>
+            <input type="text" id="formDesc" placeholder="e.g., Help us improve our support">
+
+            <label style="font-size: 0.8rem; font-weight: bold;">Number of Questions</label>
+            <input type="number" id="questionCount" min="1" max="10" value="1">
+
+            <div id="questionsContainer"></div>
+        </div>
+        <button id="copyBtn" onclick="generateLink()">Copy Link</button>
+        <p id="linkResult" style="margin-top: 15px; font-weight: bold; color: #2ecc71; word-wrap: break-word;"></p>
+        <button onclick="showSection('portalSection')"
+            style="background: none; color: #4a90e2; border: 1px solid #4a90e2; margin-top: 10px;">Back to Hub</button>
+        <a href="analytics.html" style="text-decoration: none;">
+            <button
+                style="margin-top: 1rem; width: 100%; background-color: transparent; border: 1px solid #2ecc71; color: #2ecc71;">View
+                Analytics Dashboard</button>
+        </a>
     </div>
 
     <script>
-        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            document.getElementById('formContainer').classList.add('hidden');
-            document.getElementById('success').classList.remove('hidden');
-        });
+        function handleLogin() {
+            // In a real app, you'd verify credentials with a server here
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('portalSection').classList.remove('hidden');
+        }
+
+        function showSection(sectionId) {
+            // Hide all cards
+            document.getElementById('portalSection').classList.add('hidden');
+            document.getElementById('createSection').classList.add('hidden');
+
+            // Show the specific one
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        const numInput = document.getElementById('questionCount');
+        const container = document.getElementById('questionsContainer');
+
+        function generateQuestionInputs() {
+            const count = parseInt(numInput.value) || 1;
+            container.innerHTML = ''; // Clear existing
+
+            for (let i = 1; i <= count; i++) {
+                const div = document.createElement('div');
+                div.className = 'question-group';
+                div.innerHTML = `
+                    <label>Question ${i}</label>
+                    <input type="text" class="dynamic-q" id="q${i}" placeholder="e.g., Question ${i} Text">
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Listen for changes
+        numInput.addEventListener('input', generateQuestionInputs);
+
+        // Initial call
+        generateQuestionInputs();
+
+        async function generateLink() {
+            const formTitle = document.getElementById('formTitle').value || 'Feedback Form';
+            const formDesc = document.getElementById('formDesc').value || 'Please share your thoughts.';
+
+            // Collect dynamic questions
+            const questionInputs = document.querySelectorAll('.dynamic-q');
+            const questions = Array.from(questionInputs).map(input => input.value || input.getAttribute('placeholder')).join('|');
+            const count = questionInputs.length;
+
+            const params = new URLSearchParams({
+                title: formTitle,
+                desc: formDesc,
+                questions: questions,
+                count: count
+            });
+
+            // Construct Link
+            const randomId = Math.floor(Math.random() * 10000);
+
+            // Get absolute path for clipboard
+            const pathArray = window.location.pathname.split('/');
+            pathArray.pop(); // remove index.html
+            const newPathname = pathArray.join('/') + '/home.html';
+            const origin = window.location.origin;
+
+            const link = `${origin}${newPathname}?id=${randomId}&${params.toString()}`;
+
+            try {
+                await navigator.clipboard.writeText(link);
+                document.getElementById('linkResult').innerText = "Link Copied! " + link;
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = "Copy Link", 2000);
+            } catch (err) {
+                document.getElementById('linkResult').innerText = "Could not copy. Link: " + link;
+            }
+        }
+
+        function logout() {
+            location.reload(); // Simple way to reset state
+        }
+
+        // Set video playback speed for slow motion effect
+        document.getElementById('bg-video').playbackRate = 0.5;
     </script>
 </body>
+
 </html>

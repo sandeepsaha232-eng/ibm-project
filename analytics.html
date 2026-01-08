@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            margin-left: 10px;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .kpi-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Data Table */
+        .table-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .star {
+            color: #ffc107;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Analytics Dashboard</h1>
+            <div>
+                <button class="btn" onclick="window.location.href='index.html'">Back to Generator</button>
+                <button class="btn btn-danger" onclick="clearData()">Reset Data</button>
+            </div>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Total Responses</div>
+                <div class="kpi-value" id="totalCount">0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Average Rating</div>
+                <div class="kpi-value" id="avgRating">0.0</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Net Promoter Score (Est)</div>
+                <div class="kpi-value" id="npsScore">0</div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Rating Distribution</h3>
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Completion Status</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <h3>Recent Feedback</h3>
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Rating</th>
+                        <th>Review</th>
+                        <th>Question Context</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div id="emptyMessage" class="empty-state" style="display:none;">No data found. Go submit some feedback!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Fetch Data from Local Storage
+        // Only read app_feedback_data. Filter out invalid ratings (0 or NaN).
+        const rawData = localStorage.getItem('app_feedback_data');
+        const allData = rawData ? JSON.parse(rawData) : [];
+
+        // Filter: Only accept entries with a valid rating (1-5)
+        const feedbackData = allData.filter(item => {
+            const r = parseInt(item.rating);
+            return r >= 1 && r <= 5;
+        });
+
+        if (feedbackData.length === 0) {
+            document.getElementById('emptyMessage').style.display = 'block';
+        }
+
+        // 2. Calculate KPI Metrics
+        const total = feedbackData.length;
+
+        // Calculate Average
+        const sum = feedbackData.reduce((acc, curr) => acc + (parseInt(curr.rating) || 0), 0);
+        const avg = total > 0 ? (sum / total).toFixed(1) : 0;
+
+        // Calculate NPS (Rough Estimate: 5 is Promoter, 4 Passive, 1-3 Detractor)
+        const promoters = feedbackData.filter(i => i.rating == 5).length;
+        const detractors = feedbackData.filter(i => i.rating <= 3).length;
+        const nps = total > 0 ? Math.round(((promoters - detractors) / total) * 100) : 0;
+
+        // Update HTML
+        document.getElementById('totalCount').textContent = total;
+        document.getElementById('avgRating').textContent = avg;
+        document.getElementById('npsScore').textContent = nps;
+
+        // 3. Prepare Chart Data (Counts for Star 1, 2, 3, 4, 5)
+        const starCounts = [0, 0, 0, 0, 0]; // Index 0 is 1 star, Index 4 is 5 stars
+        feedbackData.forEach(item => {
+            if (item.rating >= 1 && item.rating <= 5) {
+                starCounts[item.rating - 1]++;
+            }
+        });
+
+        const reviewsWithText = feedbackData.filter(i => i.review && i.review.trim() !== "").length;
+
+        // 4. Render Bar Chart (Distribution)
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: starCounts,
+                    backgroundColor: [
+                        '#ff6b6b', '#ff9f43', '#feca57', '#48dbfb', '#1dd1a1'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+
+        // 5. Render Pie Chart (Reviews vs Ratings Only)
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['With Written Review', 'Rating Only'],
+                datasets: [{
+                    data: [reviewsWithText, total - reviewsWithText],
+                    backgroundColor: ['#54a0ff', '#c8d6e5']
+                }]
+            }
+        });
+
+        // 6. Populate Table (Show last 10 entries)
+        const tableBody = document.getElementById('tableBody');
+        // Reverse to show newest first, slice to take top 10
+        feedbackData.slice().reverse().slice(0, 10).forEach(item => {
+            const row = document.createElement('tr');
+
+            // Create star icons string
+            let starsHtml = '';
+            for (let i = 0; i < 5; i++) {
+                starsHtml += i < item.rating ? '★' : '☆';
+            }
+
+            row.innerHTML = `
+            <td>${item.timestamp}</td>
+            <td class="star">${starsHtml}</td>
+            <td>${item.review ? item.review : '<span style="color:#ccc; font-style:italic">No text</span>'}</td>
+            <td style="font-size:0.85rem; color:#666;">${item.question || 'N/A'}</td>
+        `;
+            tableBody.appendChild(row);
+        });
+
+        // Utility: Clear Data
+        function clearData() {
+            if (confirm("Are you sure? This will delete all feedback data.")) {
+                localStorage.removeItem('app_feedback_data');
+                localStorage.removeItem('localFeedbackSubmissions');
+                location.reload();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

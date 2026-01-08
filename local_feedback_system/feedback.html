@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provide Feedback</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        #questionContainer h2 {
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        /* Star Rating CSS magic */
+        .rating-container {
+            display: flex;
+            flex-direction: row-reverse;
+            /* Important for CSS selection overlap */
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-container input {
+            display: none;
+            /* hide radio buttons */
+        }
+
+        .rating-container label {
+            font-size: 2.5rem;
+            color: #ddd;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: color 0.2s;
+        }
+
+        /* When hovering a star, highlight it and all stars to its left (due to row-reverse) */
+        .rating-container label:hover,
+        .rating-container label:hover~label,
+        .rating-container input:checked~label {
+            color: #ffc107;
+            /* Gold color */
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 1.5rem;
+            font-family: inherit;
+        }
+
+        .btn-submit {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background-color: #357abd;
+        }
+
+        /* Hidden States */
+        #errorState,
+        #thankYouState {
+            display: none;
+        }
+
+        #errorState {
+            color: #d9534f;
+        }
+
+        #thankYouState {
+            color: #5cb85c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div id="errorState">
+            <h2>Invalid Link</h2>
+            <p>No question data was found in this URL.</p>
+        </div>
+
+        <div id="formState">
+            <div id="questionContainer">
+                <h2 id="questionText">Loading question...</h2>
+            </div>
+
+            <form id="feedbackForm">
+                <div class="rating-container">
+                    <input type="radio" name="rating" id="star5" value="5"><label for="star5" title="Excellent"><i
+                            class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="star4" value="4"><label for="star4" title="Good"><i
+                            class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="star3" value="3"><label for="star3" title="Average"><i
+                            class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="star2" value="2"><label for="star2" title="Poor"><i
+                            class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" id="star1" value="1"><label for="star1" title="Terrible"><i
+                            class="fas fa-star"></i></label>
+                </div>
+
+                <textarea id="reviewText" placeholder="Tell us more about your experience (optional)..."></textarea>
+
+                <button type="submit" class="btn-submit">Submit Feedback</button>
+            </form>
+        </div>
+
+        <div id="thankYouState">
+            <h2>Thank You!</h2>
+            <p>Your feedback has been submitted locally.</p>
+            <i class="fas fa-check-circle fa-4x" style="margin-top:20px"></i>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const question = urlParams.get('q'); // Get the data stored in the URL
+
+            const formState = document.getElementById('formState');
+            const errorState = document.getElementById('errorState');
+            const thankYouState = document.getElementById('thankYouState');
+
+            if (question) {
+                // If data exists, decode it and display it
+                document.getElementById('questionText').textContent = decodeURIComponent(question);
+            } else {
+                // If no data in URL, show error
+                formState.style.display = 'none';
+                errorState.style.display = 'block';
+            }
+
+            // Handle Form Submission (Client-side only demonstration)
+            const form = document.getElementById('feedbackForm');
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // 1. Gather data
+                const selectedRating = document.querySelector('input[name="rating"]:checked');
+                const ratingValue = selectedRating ? selectedRating.value : "No rating";
+                const reviewValue = document.getElementById('reviewText').value;
+
+                // Since there is no backend, we will log the data to console 
+                // and optionally save to LocalStorage to mimic "storing itself via JS"
+                console.log("Form Submitted!");
+                console.log("Question:", decodeURIComponent(question));
+                console.log("Rating:", ratingValue);
+                console.log("Review:", reviewValue);
+
+                // Optional: Store locally in browser just to show data persistence
+                const feedbackData = {
+                    question: decodeURIComponent(question),
+                    rating: parseInt(ratingValue) || 0,
+                    review: reviewValue,
+                    timestamp: new Date().toLocaleString()
+                };
+                // Appending to a local storage list
+                let existingData = JSON.parse(localStorage.getItem('app_feedback_data') || "[]");
+                existingData.push(feedbackData);
+                localStorage.setItem('app_feedback_data', JSON.stringify(existingData));
+
+                // Show thank you state
+                formState.style.display = 'none';
+                thankYouState.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+
+</html>
