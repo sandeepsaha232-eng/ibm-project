@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Common Card Style */
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 { color: #333; margin-bottom: 1.5rem; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #357abd; }
+
+        /* Menu Options */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            padding: 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .menu-item:hover {
+            border-color: #4a90e2;
+            background-color: #f8fbff;
+        }
+
+        .menu-item h3 { margin: 0 0 5px 0; color: #4a90e2; }
+        .menu-item p { margin: 0; font-size: 0.85rem; color: #777; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="loginSection" class="card">
+        <h2>Admin Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+    </div>
+
+    <div id="portalSection" class="card hidden">
+        <h2>Welcome, Admin</h2>
+        <p>What would you like to do today?</p>
+        
+        <div class="menu-grid">
+            <div class="menu-item" onclick="showSection('createSection')">
+                <h3>➕ Create New Form</h3>
+                <p>Generate a new feedback link</p>
+            </div>
+            <div class="menu-item" onclick="window.location.href='admin.html'">
+                <h3>📊 View Analytics</h3>
+                <p>Check data from past feedbacks</p>
+            </div>
+        </div>
+        <button onclick="logout()" style="margin-top: 20px; background: #999;">Logout</button>
+    </div>
+
+    <div id="createSection" class="card hidden">
+        <h2>Create Feedback Form</h2>
+        <div style="text-align: left;">
+            <label style="font-size: 0.8rem; font-weight: bold;">Form Title</label>
+            <input type="text" placeholder="e.g., Customer Service Survey">
+            
+            <label style="font-size: 0.8rem; font-weight: bold;">Description</label>
+            <input type="text" placeholder="e.g., Help us improve our support">
+        </div>
+        <button onclick="generateLink()">Generate & Copy Link</button>
+        <p id="linkResult" style="margin-top: 15px; font-weight: bold; color: #2ecc71;"></p>
+        <button onclick="showSection('portalSection')" style="background: none; color: #4a90e2; border: 1px solid #4a90e2; margin-top: 10px;">Back to Hub</button>
+    </div>
+
+    <script>
+        function handleLogin() {
+            // In a real app, you'd verify credentials with a server here
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('portalSection').classList.remove('hidden');
+        }
+
+        function showSection(sectionId) {
+            // Hide all cards
+            document.getElementById('portalSection').classList.add('hidden');
+            document.getElementById('createSection').classList.add('hidden');
+            
+            // Show the specific one
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function generateLink() {
+            const randomId = Math.floor(Math.random() * 10000);
+            const link = "mysite.com/form.html?id=" + randomId;
+            document.getElementById('linkResult').innerText = "Form Created! Link: " + link;
+        }
+
+        function logout() {
+            location.reload(); // Simple way to reset state
+        }
+    </script>
+</body>
+</html>

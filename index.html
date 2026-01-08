@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Card Container */
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 { color: #333; margin-top: 0; }
+        p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        /* Input Groups */
+        .input-group { margin-bottom: 1.2rem; }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .optional-text {
+            font-weight: normal;
+            font-style: italic;
+            color: #999;
+            font-size: 0.8rem;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box; /* Important for width */
+        }
+
+        /* Rating Buttons */
+        .rating-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-item { flex: 1; text-align: center; }
+
+        .rating-item input { display: none; }
+
+        .rating-item label {
+            display: block;
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 0 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .rating-item input:checked + label {
+            background: #4a90e2;
+            color: white;
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover { background-color: #357abd; }
+
+        .hidden { display: none; }
+        #success { text-align: center; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card" id="formContainer">
+        <h2>Feedback</h2>
+        <p>Please let us know how we did!</p>
+
+        <form id="feedbackForm">
+            <div class="input-group">
+                <label>Name <span class="optional-text">(Optional)</span></label>
+                <input type="text" name="userName" placeholder="Your Name">
+            </div>
+
+            <div class="input-group">
+                <label>Email <span class="optional-text">(Optional)</span></label>
+                <input type="email" name="userEmail" placeholder="email@example.com">
+            </div>
+
+            <label>Rating (1-5)</label>
+            <div class="rating-container">
+                <div class="rating-item">
+                    <input type="radio" name="rating" id="r1" value="1" required>
+                    <label for="r1">1</label>
+                </div>
+                <div class="rating-item">
+                    <input type="radio" name="rating" id="r2" value="2">
+                    <label for="r2">2</label>
+                </div>
+                <div class="rating-item">
+                    <input type="radio" name="rating" id="r3" value="3">
+                    <label for="r3">3</label>
+                </div>
+                <div class="rating-item">
+                    <input type="radio" name="rating" id="r4" value="4">
+                    <label for="r4">4</label>
+                </div>
+                <div class="rating-item">
+                    <input type="radio" name="rating" id="r5" value="5">
+                    <label for="r5">5</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Your Message</label>
+                <textarea name="comment" rows="4" required placeholder="What's on your mind?"></textarea>
+            </div>
+
+            <button type="submit">Send Feedback</button>
+        </form>
+    </div>
+
+    <div id="success" class="form-card hidden">
+        <h2 style="color: #2ecc71;">Thank You!</h2>
+        <p>Your feedback has been submitted to the admin dashboard.</p>
+    </div>
+
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.getElementById('formContainer').classList.add('hidden');
+            document.getElementById('success').classList.remove('hidden');
+        });
+    </script>
+</body>
+</html>

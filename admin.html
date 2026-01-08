@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            flex: 1;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .stat-card h3 { margin: 0; color: #666; font-size: 0.9rem; }
+        .stat-card p { margin: 10px 0 0; font-size: 1.8rem; font-weight: bold; color: #333; }
+
+        /* Chart Area */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 300px;
+        }
+
+        /* Table Area */
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #777;
+            text-align: left;
+            padding: 15px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            color: #444;
+            font-size: 0.9rem;
+        }
+
+        .rating-badge {
+            background: #e1f5fe;
+            color: #0288d1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Feedback Dashboard</h1>
+            <button style="padding: 8px 16px; cursor: pointer;">Refresh Data</button>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <h3>Total Responses</h3>
+                <p>124</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Rating</h3>
+                <p>4.2</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Jane Doe</strong><br><small>jane@test.com</small></td>
+                        <td><span class="rating-badge">5 Stars</span></td>
+                        <td>Excellent service, very happy with the results!</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Anonymous</strong></td>
+                        <td><span class="rating-badge">3 Stars</span></td>
+                        <td>The form was easy to use but I want more options.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['1★', '2★', '3★', '4★', '5★'],
+                datasets: [{
+                    label: 'Rating Count',
+                    data: [5, 10, 25, 45, 39],
+                    backgroundColor: '#4a90e2'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+</body>
+</html>
