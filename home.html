@@ -64,7 +64,6 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             box-sizing: border-box;
-            /* Important for width */
         }
 
         .rating-container {
@@ -159,18 +158,15 @@
     </div>
 
     <script>
-        // Parse URL Parameters
         const urlParams = new URLSearchParams(window.location.search);
         const title = urlParams.get('title');
         const desc = urlParams.get('desc');
         const questionsString = urlParams.get('questions');
         const count = parseInt(urlParams.get('count')) || 1;
 
-        // Populate Form
         if (title) document.getElementById('formTitle').innerText = title;
         if (desc) document.getElementById('formDesc').innerText = desc;
 
-        // Generate Questions
         const container = document.getElementById('questionsContainer');
         const questionsList = questionsString ? questionsString.split('|') : [];
 
@@ -195,7 +191,6 @@
         document.getElementById('feedbackForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Collect Data
             const responses = [];
             for (let i = 1; i <= count; i++) {
                 const selected = document.querySelector(`input[name="rating_${i}"]:checked`);
@@ -209,21 +204,15 @@
             const userName = document.querySelector('input[name="userName"]').value;
             const userEmail = document.querySelector('input[name="userEmail"]').value;
 
-            // Store locally
-            // We need to flatten the responses for the single-row analytics table provided in the prompt
-            // The prompt's analytics code expects a single rating/review per entry.
-            // Since we support multiple questions, we will save an entry PER question response
-            // so the analytics can aggregate them all.
-
             let existingData = JSON.parse(localStorage.getItem('app_feedback_data') || "[]");
 
             responses.forEach(r => {
                 const feedbackData = {
                     question: r.question,
-                    rating: parseInt(r.rating) || 0, // Ensure integer
-                    review: comment, // Attach the general comment to each rating for context
+                    rating: parseInt(r.rating) || 0,
+                    review: comment,
                     timestamp: new Date().toLocaleString(),
-                    userName: userName, // Preserving extra metadata
+                    userName: userName,
                     userEmail: userEmail
                 };
                 existingData.push(feedbackData);
@@ -231,7 +220,6 @@
 
             localStorage.setItem('app_feedback_data', JSON.stringify(existingData));
 
-            // Show Success
             document.getElementById('formContainer').classList.add('hidden');
             document.getElementById('success').classList.remove('hidden');
             console.log("Feedback saved locally:", existingData);

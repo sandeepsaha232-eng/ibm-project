@@ -18,7 +18,6 @@
             margin: 0 auto;
         }
 
-        /* Dashboard Header */
         .header {
             display: flex;
             justify-content: space-between;
@@ -40,7 +39,6 @@
             margin-left: 10px;
         }
 
-        /* KPI Cards */
         .kpi-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -70,7 +68,6 @@
             letter-spacing: 1px;
         }
 
-        /* Charts Section */
         .charts-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -85,7 +82,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        /* Data Table */
         .table-card {
             background: white;
             padding: 20px;
@@ -182,12 +178,9 @@
     </div>
 
     <script>
-        // 1. Fetch Data from Local Storage
-        // Only read app_feedback_data. Filter out invalid ratings (0 or NaN).
         const rawData = localStorage.getItem('app_feedback_data');
         const allData = rawData ? JSON.parse(rawData) : [];
 
-        // Filter: Only accept entries with a valid rating (1-5)
         const feedbackData = allData.filter(item => {
             const r = parseInt(item.rating);
             return r >= 1 && r <= 5;
@@ -197,25 +190,20 @@
             document.getElementById('emptyMessage').style.display = 'block';
         }
 
-        // 2. Calculate KPI Metrics
         const total = feedbackData.length;
 
-        // Calculate Average
         const sum = feedbackData.reduce((acc, curr) => acc + (parseInt(curr.rating) || 0), 0);
         const avg = total > 0 ? (sum / total).toFixed(1) : 0;
 
-        // Calculate NPS (Rough Estimate: 5 is Promoter, 4 Passive, 1-3 Detractor)
         const promoters = feedbackData.filter(i => i.rating == 5).length;
         const detractors = feedbackData.filter(i => i.rating <= 3).length;
         const nps = total > 0 ? Math.round(((promoters - detractors) / total) * 100) : 0;
 
-        // Update HTML
         document.getElementById('totalCount').textContent = total;
         document.getElementById('avgRating').textContent = avg;
         document.getElementById('npsScore').textContent = nps;
 
-        // 3. Prepare Chart Data (Counts for Star 1, 2, 3, 4, 5)
-        const starCounts = [0, 0, 0, 0, 0]; // Index 0 is 1 star, Index 4 is 5 stars
+        const starCounts = [0, 0, 0, 0, 0];
         feedbackData.forEach(item => {
             if (item.rating >= 1 && item.rating <= 5) {
                 starCounts[item.rating - 1]++;
@@ -224,7 +212,6 @@
 
         const reviewsWithText = feedbackData.filter(i => i.review && i.review.trim() !== "").length;
 
-        // 4. Render Bar Chart (Distribution)
         const ctxBar = document.getElementById('barChart').getContext('2d');
         new Chart(ctxBar, {
             type: 'bar',
@@ -245,7 +232,6 @@
             }
         });
 
-        // 5. Render Pie Chart (Reviews vs Ratings Only)
         const ctxPie = document.getElementById('pieChart').getContext('2d');
         new Chart(ctxPie, {
             type: 'doughnut',
@@ -258,13 +244,10 @@
             }
         });
 
-        // 6. Populate Table (Show last 10 entries)
         const tableBody = document.getElementById('tableBody');
-        // Reverse to show newest first, slice to take top 10
         feedbackData.slice().reverse().slice(0, 10).forEach(item => {
             const row = document.createElement('tr');
 
-            // Create star icons string
             let starsHtml = '';
             for (let i = 0; i < 5; i++) {
                 starsHtml += i < item.rating ? '★' : '☆';
@@ -279,7 +262,6 @@
             tableBody.appendChild(row);
         });
 
-        // Utility: Clear Data
         function clearData() {
             if (confirm("Are you sure? This will delete all feedback data.")) {
                 localStorage.removeItem('app_feedback_data');

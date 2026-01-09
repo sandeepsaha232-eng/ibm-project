@@ -81,7 +81,6 @@
             background-color: #f0f8ff;
         }
 
-        /* Success Message hidden by default */
         #successMessage {
             display: none;
             margin-top: 1rem;
@@ -138,26 +137,19 @@
                 return;
             }
 
-            // 1. Determine the base path to the feedback file.
-            // We assume feedback.html is in the same folder.
-            // We need the absolute path for the clipboard.
             const pathArray = window.location.pathname.split('/');
-            pathArray.pop(); // remove generator.html filename
+            pathArray.pop();
             const newPathname = pathArray.join('/') + '/feedback.html';
             const origin = window.location.origin;
 
-            // 2. Encode the question data into the URL parameters
             const encodedQuestion = encodeURIComponent(question);
             const fullLink = `${origin}${newPathname}?q=${encodedQuestion}`;
 
-            // 3. Copy to actual system clipboard
             navigator.clipboard.writeText(fullLink).then(function () {
-                // Success feedback UI
                 urlDisplay.textContent = fullLink;
                 successMessage.style.display = 'block';
                 copyBtn.textContent = "Copied!";
 
-                // Reset button text after 2 seconds
                 setTimeout(() => {
                     copyBtn.textContent = "Copy Link";
                 }, 2000);

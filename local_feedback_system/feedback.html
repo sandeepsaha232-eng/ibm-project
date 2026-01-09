@@ -33,18 +33,15 @@
             margin-bottom: 2rem;
         }
 
-        /* Star Rating CSS magic */
         .rating-container {
             display: flex;
             flex-direction: row-reverse;
-            /* Important for CSS selection overlap */
             justify-content: center;
             margin-bottom: 1.5rem;
         }
 
         .rating-container input {
             display: none;
-            /* hide radio buttons */
         }
 
         .rating-container label {
@@ -55,12 +52,10 @@
             transition: color 0.2s;
         }
 
-        /* When hovering a star, highlight it and all stars to its left (due to row-reverse) */
         .rating-container label:hover,
         .rating-container label:hover~label,
         .rating-container input:checked~label {
             color: #ffc107;
-            /* Gold color */
         }
 
         textarea {
@@ -91,7 +86,6 @@
             background-color: #357abd;
         }
 
-        /* Hidden States */
         #errorState,
         #thankYouState {
             display: none;
@@ -150,51 +144,42 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
-            const question = urlParams.get('q'); // Get the data stored in the URL
+            const question = urlParams.get('q');
 
             const formState = document.getElementById('formState');
             const errorState = document.getElementById('errorState');
             const thankYouState = document.getElementById('thankYouState');
 
             if (question) {
-                // If data exists, decode it and display it
                 document.getElementById('questionText').textContent = decodeURIComponent(question);
             } else {
-                // If no data in URL, show error
                 formState.style.display = 'none';
                 errorState.style.display = 'block';
             }
 
-            // Handle Form Submission (Client-side only demonstration)
             const form = document.getElementById('feedbackForm');
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                // 1. Gather data
                 const selectedRating = document.querySelector('input[name="rating"]:checked');
                 const ratingValue = selectedRating ? selectedRating.value : "No rating";
                 const reviewValue = document.getElementById('reviewText').value;
 
-                // Since there is no backend, we will log the data to console 
-                // and optionally save to LocalStorage to mimic "storing itself via JS"
                 console.log("Form Submitted!");
                 console.log("Question:", decodeURIComponent(question));
                 console.log("Rating:", ratingValue);
                 console.log("Review:", reviewValue);
 
-                // Optional: Store locally in browser just to show data persistence
                 const feedbackData = {
                     question: decodeURIComponent(question),
                     rating: parseInt(ratingValue) || 0,
                     review: reviewValue,
                     timestamp: new Date().toLocaleString()
                 };
-                // Appending to a local storage list
                 let existingData = JSON.parse(localStorage.getItem('app_feedback_data') || "[]");
                 existingData.push(feedbackData);
                 localStorage.setItem('app_feedback_data', JSON.stringify(existingData));
 
-                // Show thank you state
                 formState.style.display = 'none';
                 thankYouState.style.display = 'block';
             });
